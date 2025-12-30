@@ -5,28 +5,28 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - list:
-        elements:
-          - namespace: staging
-          - namespace: qa
-          - namespace: prod
+    - git:
+        repoURL: https://github.com/codefresh-contrib/gitops-cert-level-2-examples.git
+        revision: HEAD
+        directories:
+          - path: environment-promotion/envs/*
   template:
     metadata:
-      name: '{{namespace}}'
+      name: '{{path.basename}}'
     spec:
       # The project the application belongs to.
       project: default
 
       # Source of the application manifests
       source:
-        repoURL: https://github.com/sbaizet-ledger/gitops-cert-level-2-examples.git
+        repoURL: https://github.com/codefresh-contrib/gitops-cert-level-2-examples.git
         targetRevision: HEAD
-        path: './environment-promotion/{{ namespace }}/*'
+        path: '{{path}}'
 
       # Destination cluster and namespace to deploy the application
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{namespace}}'
+        namespace: '{{path.basename}}'
 
       # Sync policy
       syncPolicy:
